@@ -1,0 +1,401 @@
+/* --- Ajustes para el interior de la ventana flotante --- */
+.chat-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.chat-container h2 {
+    font-size: 16px;
+    text-align: center;
+    margin: 10px 0;
+    color: #333;
+}
+
+/* 
+   DISEÑO DE LA VENTANA DE CHAT 
+    */
+.chat-box {
+    flex-grow: 1;
+    background-color: #f4f7f6;
+    /* Fondo gris muy suave y cálido */
+    border: 1px solid #dce1e3;
+    border-radius: 12px;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+/* Estructura base de las burbujas de mensaje */
+.mensaje-usuario,
+.mensaje-ia {
+    max-width: 80%;
+    padding: 14px 18px;
+    font-size: 15px;
+    line-height: 1.5;
+    position: relative;
+    word-wrap: break-word;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    animation: aparecer 0.3s ease-out;
+}
+
+/* Burbuja del Ciudadano (Usuario) */
+.mensaje-usuario {
+    align-self: flex-end;
+    background-color: #0066cc;
+    color: #ffffff;
+    border-radius: 18px 18px 0px 18px;
+}
+
+/* Burbuja del Asistente (IA) */
+.mensaje-ia {
+    align-self: flex-start;
+    background-color: #ffffff;
+    color: #333333;
+    border-radius: 18px 18px 18px 0px;
+    border-left: 4px solid #1a4d2e;
+}
+
+/* Animación de entrada para los mensajes */
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Personalizar la barra de desplazamiento (Scrollbar) */
+.chat-box::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-box::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-box::-webkit-scrollbar-thumb {
+    background-color: #cccccc;
+    border-radius: 10px;
+}
+
+/* 
+   RESTO DE LA INTERFAZ
+ */
+.input-group {
+    display: flex;
+    padding: 10px;
+    box-sizing: border-box;
+    border-top: 1px solid #ddd;
+    background-color: white;
+}
+
+.input-group input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-right: 10px;
+}
+
+.input-group button {
+    padding: 10px 15px;
+    background-color: #1a4d2e;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.modulo-tramite {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 30px;
+    font-family: Arial, sans-serif;
+}
+
+.cabecera-tramite h3 {
+    margin-top: 0;
+    color: #1a4d2e;
+}
+
+.alerta-seguridad {
+    font-size: 0.85em;
+    color: #856404;
+    background-color: #fff3cd;
+    padding: 8px;
+    border-radius: 4px;
+    border-left: 4px solid #ffe8a1;
+}
+
+.grupo-input {
+    margin-bottom: 15px;
+}
+
+.grupo-input label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.grupo-input input,
+.grupo-input select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.btn-agendar {
+    background-color: #1a4d2e;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+}
+
+.btn-agendar:hover {
+    background-color: #133a22;
+}
+
+.exito-folio {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.contenedor-principal {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* --- Sistema de Pestañas (Tabs) --- */
+.tabs-navegacion {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 15px;
+}
+
+.tab-boton {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid #1a4d2e;
+    background-color: transparent;
+    color: #1a4d2e;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-boton:hover {
+    background-color: #e8f0eb;
+}
+
+.tab-boton.activo {
+    background-color: #1a4d2e;
+    color: white;
+}
+
+/* --- Control de Vistas --- */
+.oculta {
+    display: none !important;
+}
+
+/* --- Ajuste del Chat Centrado --- */
+.chat-container-central {
+    height: 450px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Estilos para la Tabla del Panel Administrativo --- */
+.btn-recargar {
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    float: right;
+    margin-top: -40px;
+}
+
+.btn-recargar:hover {
+    background-color: #004494;
+}
+
+.tabla-contenedor {
+    overflow-x: auto;
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+#tablaCitas {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    font-size: 14px;
+}
+
+#tablaCitas th {
+    background-color: #1a4d2e;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+#tablaCitas td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+#tablaCitas tr:hover {
+    background-color: #f1f8f4;
+}
+
+/* 
+   ANIMACIÓN DEL BOTÓN DE CARGA
+ */
+.btn-moderno {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #0066cc;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-moderno:disabled {
+    background-color: #99c2ff;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.spinner {
+    width: 18px;
+    height: 18px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #ffffff;
+    animation: girar 1s ease-in-out infinite;
+}
+
+.oculto {
+    display: none;
+}
+
+@keyframes girar {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/*
+   DISEÑO RESPONSIVO (MÓVILES Y TABLETS)
+ */
+@media (max-width: 768px) {
+
+    /* 1. Reducir los márgenes laterales para aprovechar el espacio */
+    .contenedor-principal {
+        padding: 10px;
+    }
+
+    /* 2. Apilar las pestañas del menú hacia abajo en lugar de a los lados */
+    .tabs-navegacion {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .tab-boton {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+    }
+
+    /* 3. Ajustar el tamaño del chat para pantallas táctiles */
+    .chat-container-central {
+        height: 70vh;
+        /* Toma el 70% de la altura de la pantalla del celular */
+    }
+
+    .chat-box {
+        padding: 15px 10px;
+        /* Menos espacio interno para que quepa más texto */
+    }
+
+    .mensaje-usuario,
+    .mensaje-ia {
+        max-width: 90%;
+        /* Las burbujas se estiran un poco más */
+        font-size: 14px;
+        /* Texto ligeramente más pequeño */
+    }
+
+    /* 4. Ajustar el botón y el input del chat para que no choquen */
+    .input-group {
+        flex-direction: column;
+        /* Apila la caja de texto arriba y el botón abajo */
+        gap: 10px;
+    }
+
+    .input-group input {
+        margin-right: 0;
+        width: 100%;
+    }
+
+    .btn-moderno {
+        width: 100%;
+        /* Botón grande y fácil de tocar con el pulgar */
+    }
+
+    /* 5. Acomodar el botón de recargar datos en el panel Admin */
+    .btn-recargar {
+        float: none;
+        /* Quita la flotación */
+        display: block;
+        width: 100%;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    /* 6. Textos del formulario más adaptables */
+    .cabecera-tramite h3 {
+        font-size: 1.2rem;
+        text-align: center;
+    }
+}

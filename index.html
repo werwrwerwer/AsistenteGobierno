@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente de Tramix</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <main class="contenedor-principal">
+
+        <!-- TABS DE NAVEGACIÓN -->
+        <div class="tabs-navegacion">
+            <button id="btnTabFormulario" class="tab-boton activo" onclick="cambiarVista('formulario')">📝 Trámite en
+                Ventanilla</button>
+            <button id="btnTabChat" class="tab-boton" onclick="cambiarVista('chat')">💬 Asesoría con IA</button>
+            <button id="btnTabAdmin" class="tab-boton" onclick="cambiarVista('admin')">🗂️ Panel Admin</button>
+        </div>
+
+        <!-- VISTA 1: EL FORMULARIO -->
+        <div id="vistaFormulario" class="modulo-tramite">
+            <div class="cabecera-tramite">
+                <h3>Agendar Cita en Ventanilla</h3>
+                <p class="alerta-seguridad">⚠️ Entorno de desarrollo: Utiliza únicamente datos simulados o ficticios.
+                </p>
+            </div>
+
+            <form id="formularioCita">
+                <div class="grupo-input">
+                    <label for="nombreUsuario">Nombre Completo (Simulado)</label>
+                    <input type="text" id="nombreUsuario" placeholder="Ej. Juan Pérez" required>
+                </div>
+                <div class="grupo-input">
+                    <label for="identificador">CURP / RFC (Ficticio)</label>
+                    <input type="text" id="identificador" placeholder="XXXX000000XXXXXX00" required>
+                </div>
+                <div class="grupo-input">
+                    <label for="tipoDependencia">Selecciona el Trámite</label>
+                    <select id="tipoDependencia" required>
+                        <option value="">-- Selecciona una opción --</option>
+                        <option value="sat_efirma">SAT - Renovación de e.firma</option>
+                        <option value="sat_regimen">SAT - Cambio de Régimen Fiscal</option>
+                        <option value="imss_alta">IMSS - Alta en Clínica</option>
+                        <option value="imss_vigencia">IMSS - Consulta de Vigencia</option>
+                    </select>
+                </div>
+                <div class="grupo-input">
+                    <label for="fechaCita">Fecha deseada</label>
+                    <input type="date" id="fechaCita" required>
+                </div>
+                <button type="submit" class="btn-agendar">Confirmar Cita</button>
+            </form>
+
+            <div id="resultadoCita" style="display: none; margin-top: 15px; padding: 10px; border-radius: 5px;"></div>
+        </div>
+
+        <!-- VISTA 2: EL CHATBOT -->
+        <div id="vistaChat" class="modulo-tramite oculta">
+            <div class="chat-container-central">
+                <h3 style="color: #1a4d2e; margin-top: 0;">Asistente Gubernamental IA</h3>
+                <div class="chat-box" id="chatBox">
+                    <div class="mensaje-ia">¡Hola! Soy tu asistente virtual. ¿Qué trámite necesitas consultar hoy?</div>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="preguntaUsuario" placeholder="Ej. ¿Qué necesito para tramitar mi pasaporte?">
+
+                    <!-- BOTÓN ACTUALIZADO PARA LA ANIMACIÓN -->
+                    <button id="btn-enviar" class="btn-moderno" onclick="enviarPregunta()">
+                        <span id="btn-texto">Preguntar</span>
+                        <span id="btn-spinner" class="spinner oculto"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 3: EL PANEL ADMINISTRATIVO -->
+        <div id="vistaAdmin" class="modulo-tramite oculta">
+            <div class="cabecera-tramite">
+                <h3>Base de Datos: Citas Registradas</h3>
+                <button onclick="cargarCitas()" class="btn-recargar">🔄 Cargar Datos</button>
+            </div>
+
+            <div class="tabla-contenedor">
+                <table id="tablaCitas">
+                    <thead>
+                        <tr>
+                            <th>Folio</th>
+                            <th>Nombre</th>
+                            <th>CURP/RFC</th>
+                            <th>Trámite</th>
+                            <th>Fecha Cita</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTablaCitas">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #666;">Haz clic en 'Cargar Datos' para
+                                consultar la base de datos.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // --- LÓGICA DE LAS PESTAÑAS (TABS) ---
+        function cambiarVista(vistaSeleccionada) {
+            const vistaFormulario = document.getElementById('vistaFormulario');
+            const vistaChat = document.getElementById('vistaChat');
+            const vistaAdmin = document.getElementById('vistaAdmin');
+
+            const btnForm = document.getElementById('btnTabFormulario');
+            const btnChat = document.getElementById('btnTabChat');
+            const btnAdmin = document.getElementById('btnTabAdmin');
+
+            // Ocultamos todo primero
+            vistaFormulario.classList.add('oculta');
+            vistaChat.classList.add('oculta');
+            vistaAdmin.classList.add('oculta');
+            btnForm.classList.remove('activo');
+            btnChat.classList.remove('activo');
+            btnAdmin.classList.remove('activo');
+
+            // Mostramos solo la seleccionada
+            if (vistaSeleccionada === 'formulario') {
+                vistaFormulario.classList.remove('oculta');
+                btnForm.classList.add('activo');
+            } else if (vistaSeleccionada === 'chat') {
+                vistaChat.classList.remove('oculta');
+                btnChat.classList.add('activo');
+            } else if (vistaSeleccionada === 'admin') {
+                vistaAdmin.classList.remove('oculta');
+                btnAdmin.classList.add('activo');
+                // Al entrar a la pestaña de Admin, cargamos los datos automáticamente
+                cargarCitas();
+            }
+        }
+
+        // LÓGICA DEL PANEL ADMIN
+        async function cargarCitas() {
+            const tbody = document.getElementById('cuerpoTablaCitas');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Cargando información del servidor...</td></tr>';
+
+            try {
+                // Hacemos un GET a la ruta que acabas de programar
+                const respuesta = await fetch('https://api-tramix-26-gdhdg3gsgfh9gccv.mexicocentral-01.azurewebsites.net/api/ConsultarCitas');
+
+                if (!respuesta.ok) throw new Error("Error al conectar con la base de datos");
+
+                // Convertimos el JSON en un arreglo de objetos en JavaScript
+                const citas = await respuesta.json();
+
+                // Limpiamos la tabla
+                tbody.innerHTML = '';
+
+                // Recorremos la lista y pintamos fila por fila (<tr>) con sus celdas (<td>)
+                if (citas.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay citas registradas en el sistema.</td></tr>';
+                } else {
+                    citas.forEach(cita => {
+                        const fila = `
+                            <tr>
+                                <td><strong>${cita.FolioOficial}</strong></td>
+                                <td>${cita.Nombre}</td>
+                                <td>${cita.Identificador}</td>
+                                <td>${cita.Tramite}</td>
+                                <td>${cita.Fecha}</td>
+                            </tr>
+                        `;
+                        tbody.innerHTML += fila;
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Error al consultar el servidor. Asegúrate de que Azure esté encendido.</td></tr>';
+            }
+        }
+
+        // --- LÓGICA DEL CHATBOT CON ESTADO DE CARGA INTEGRADO ---
+        async function enviarPregunta() {
+            const input = document.getElementById('preguntaUsuario');
+            const chatBox = document.getElementById('chatBox');
+
+            //elementos para el estado de carga
+            const btnEnviar = document.getElementById('btn-enviar');
+            const btnTexto = document.getElementById('btn-texto');
+            const btnSpinner = document.getElementById('btn-spinner');
+
+            const pregunta = input.value;
+
+            if (!pregunta) return;
+
+            chatBox.innerHTML += `<div class="mensaje-usuario">${pregunta}</div>`;
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // 1. Bloqueamos la UI y encendemos el spinner
+            btnEnviar.disabled = true;
+            btnTexto.innerText = "Consultando...";
+            btnSpinner.classList.remove('oculto');
+            input.disabled = true;
+
+            try {
+                const respuesta = await fetch('https://api-tramix-26-gdhdg3gsgfh9gccv.mexicocentral-01.azurewebsites.net/api/TramitesChat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pregunta: pregunta })
+                });
+
+                const textoIA = await respuesta.text();
+                chatBox.innerHTML += `<div class="mensaje-ia">${textoIA}</div>`;
+            } catch (error) {
+                console.error(error);
+                // Le agregué 'color: white;' para que el texto de error sea legible sobre el fondo rojo
+                chatBox.innerHTML += `<div class="mensaje-ia" style="background-color: #dc3545; color: white;">Error de conexión con Azure.</div>`;
+            } finally {
+                // 2. Restauramos la UI sin importar si hubo éxito o error
+                btnEnviar.disabled = false;
+                btnTexto.innerText = "Preguntar";
+                btnSpinner.classList.add('oculto');
+                input.disabled = false;
+                input.focus();
+            }
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+
+        // LÓGICA DEL FORMULARIO DE CITAS
+        document.getElementById('formularioCita').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            // 1. Extraer y limpiar los datos (el .trim() quita espacios accidentales al inicio y final)
+            const nombre = document.getElementById('nombreUsuario').value.trim();
+            const identificador = document.getElementById('identificador').value.trim();
+            const tramite = document.getElementById('tipoDependencia').value;
+            const fecha = document.getElementById('fechaCita').value;
+
+            const divResultado = document.getElementById('resultadoCita');
+            divResultado.style.display = 'block';
+
+
+            // 2. VALIDACIÓN FRONTEND 
+
+
+            // Regla A: Ningún campo puede estar vacío
+            if (!nombre || !identificador || !tramite || !fecha) {
+                divResultado.className = '';
+                divResultado.style.backgroundColor = '#fff3cd'; // Amarillo de advertencia
+                divResultado.style.color = '#856404';
+                divResultado.style.padding = '10px';
+                divResultado.innerHTML = '<b>Atención:</b> Faltan datos. Por favor, completa todos los campos del formulario.';
+                return; // 🛑 Detiene el proceso aquí, NO hace la llamada al servidor
+            }
+
+            // Regla B: El identificador debe tener coherencia con el estándar de México
+            if (identificador.length < 12 || identificador.length > 18) {
+                divResultado.className = '';
+                divResultado.style.backgroundColor = '#f8d7da'; // Rojo de error
+                divResultado.style.color = '#721c24';
+                divResultado.style.padding = '10px';
+                divResultado.innerHTML = '<b>Dato Inválido:</b> El RFC debe tener entre 12 y 13 caracteres, y la CURP 18.';
+                return; // 🛑 Detiene el proceso
+            }
+
+
+            // 3. COMUNICACIÓN CON EL SERVIDOR
+
+
+            // Si pasamos los escudos, armamos el paquete y lo enviamos
+            const datosCita = {
+                nombre: nombre,
+                identificador: identificador,
+                tramite: tramite,
+                fecha: fecha
+            };
+
+            divResultado.className = '';
+            divResultado.style.backgroundColor = '#e2e3e5';
+            divResultado.style.color = '#383d41';
+            divResultado.style.padding = '10px';
+            divResultado.innerHTML = '<i>Conectando con el servidor del gobierno...</i>';
+
+            try {
+                const respuesta = await fetch('https://api-tramix-26-gdhdg3gsgfh9gccv.mexicocentral-01.azurewebsites.net/api/AgendarCita', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosCita)
+                });
+
+                if (!respuesta.ok) throw new Error("Error de validación del lado del servidor.");
+
+                const resultadoServidor = await respuesta.json();
+
+                // Mostrar éxito
+                divResultado.className = 'exito-folio';
+                divResultado.style.backgroundColor = '#d4edda';
+                divResultado.style.color = '#155724';
+                divResultado.innerHTML = `
+                    <strong>¡${resultadoServidor.mensaje}!</strong><br>
+                    A nombre de: ${resultadoServidor.nombreConfirmado}<br>
+                    Fecha: ${resultadoServidor.fechaConfirmada}<br>
+                    Tu folio oficial de seguimiento es: <strong>${resultadoServidor.folio}</strong>
+                `;
+                document.getElementById('formularioCita').reset();
+            } catch (error) {
+                divResultado.className = '';
+                divResultado.style.backgroundColor = '#f8d7da';
+                divResultado.style.color = '#721c24';
+                divResultado.style.padding = '10px';
+                divResultado.innerHTML = '<b>Error de red:</b> No se pudo agendar la cita. Verifica tu conexión o el estado del servidor.';
+            }
+        });
+    </script>
+</body>
+
+</html>
